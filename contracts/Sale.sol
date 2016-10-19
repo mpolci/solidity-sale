@@ -2,7 +2,6 @@ pragma solidity ^0.4.1;
 
 import "owned.sol";
 import "PromotedSale.sol";
-import "AddressSet.sol";
 import "SaleInterface.sol";
 
 contract Sale is owned, PromotedSale, SaleInterface {
@@ -13,8 +12,7 @@ contract Sale is owned, PromotedSale, SaleInterface {
 
     mapping (address => uint) public balanceOf;
 
-    using AddressSet for AddressSet.data;
-    AddressSet.data buyers;
+    address[] buyers;
 
     event TokensSold(address indexed buyer, address indexed promoter, uint tokens, uint payed, uint change);
 
@@ -24,7 +22,7 @@ contract Sale is owned, PromotedSale, SaleInterface {
     }
 
     function getBuyers() constant returns(address []) {
-        return buyers.items;
+        return buyers;
     }
 
     function registerPromoter(address id) onlyOwner returns(address saleAddress){
@@ -44,7 +42,8 @@ contract Sale is owned, PromotedSale, SaleInterface {
         uint toRefund = msg.value - toSpend;
 
         soldTokens += qty;
-        buyers.insert(buyer);
+        if (balanceOf[buyer] == 0)
+            buyers.push(buyer);
         balanceOf[buyer] += qty;
         updatePromotedBalances({source: msg.sender, eth: toSpend, tokens: qty});
         if (toRefund >= 1 finney) {

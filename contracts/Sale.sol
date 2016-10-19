@@ -9,9 +9,8 @@ contract Sale is owned, PromotedSale, SaleInterface {
     uint public maxTokens;
 
     uint public soldTokens = 0;
-
+    bool public saleStopped = false;
     mapping (address => uint) public balanceOf;
-
     address[] buyers;
 
     event TokensSold(address indexed buyer, address indexed promoter, uint tokens, uint payed, uint change);
@@ -21,8 +20,16 @@ contract Sale is owned, PromotedSale, SaleInterface {
         tokenPrice = _price;
     }
 
+    function stopSale(bool stop) onlyOwner {
+      saleStopped = stop;
+    }
+
     function getBuyers() constant returns(address []) {
         return buyers;
+    }
+
+    function saleEnded() constant returns(bool) {
+      return soldTokens >= maxTokens || saleStopped;
     }
 
     function registerPromoter(address id) onlyOwner returns(address saleAddress){
@@ -31,6 +38,7 @@ contract Sale is owned, PromotedSale, SaleInterface {
 
     // Pay attention calling this function from another contract. This function could terminate with a address.call.value()
     function buyTokenFor(address buyer) payable {
+        if (saleStopped) throw;
         uint qty = msg.value / tokenPrice;
         uint availableTokens = maxTokens - soldTokens;
         if (qty == 0) throw;
@@ -60,7 +68,4 @@ contract Sale is owned, PromotedSale, SaleInterface {
         msg.sender.call.value(amount);
     }
 
-    function saleEnded() constant returns(bool) {
-      return false; // TODO
-    }
 }

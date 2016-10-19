@@ -6,7 +6,6 @@ contract('PromotedSale', function (accounts) {
   before(done => {
     PromotedSaleTest.new(from0)
     .then(contract => {
-      console.log(contract.address);
       sale = contract
       done()
     })
@@ -14,7 +13,6 @@ contract('PromotedSale', function (accounts) {
   })
 
   it('should have no promoters', () => {
-    console.log('inizio');
     return sale.promotersCount()
     .then(value => assert.equal(value, 0, 'promotersCount() should return 0'))
     .then(() => sale.promoters(0))

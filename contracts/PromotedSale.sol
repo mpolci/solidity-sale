@@ -9,19 +9,23 @@ contract PromotedSale {
     uint tokensSold;
     uint ethCollected;
   }
-  Promoter [] public promoters;
+  address [] public promoters;
   mapping (address => PromData) public promotersData;
   event PromoterRegistered(uint index, address saleAddress, address ownerAddress);
 
-  function promotersCount() constant returns(uint) {
+  function getPromotersCount() constant returns(uint) {
     return promoters.length;
+  }
+
+  function getPromoters() constant returns(address []) {
+    return promoters;
   }
 
   function createPromoter(address owner) internal returns(address) {
     Promoter created = new Promoter();
     var data = promotersData[created];
     data.owner = owner;
-    var idx = promoters.push(created);
+    var idx = promoters.push(address(created));
     PromoterRegistered(idx, created, owner);
     return created;
   }

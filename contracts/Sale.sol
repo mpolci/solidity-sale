@@ -28,6 +28,10 @@ contract Sale is owned, PromotedSale, SaleInterface {
         return buyers;
     }
 
+    function getBuyersCount() constant returns(uint) {
+        return buyers.length;
+    }
+
     function saleEnded() constant returns(bool) {
       return soldTokens >= maxTokens || saleStopped;
     }

@@ -32,10 +32,43 @@ function checkEthBalance(address, expected, msg) {
   assert.equal(web3.eth.getBalance(address).toString(), expected, msg)
 }
 
+function newDeferred() {
+  let value
+  let resolve = null
+  let reject = null
+
+  let promise = new Promise((res, rej) => {
+    if (resolve) res(value)
+    else if (reject) rej(value)
+    else {
+      resolve = res
+      reject = rej
+    }
+  })
+
+  return {
+    getPromise: () => promise,
+    resolve: (resVal) => {
+      if (resolve) resolve(resVal)
+      else {
+        resolve = true
+        value = resVal
+      }
+    },
+    reject: (rejVal) => {
+      if (reject) reject(value)
+      else {
+        reject = true
+        value = rejVal
+      }
+    }
+  }
+}
+
 contract('Sale', function (accounts) {
   const TOKENS = 1000
   const PRICE = web3.toWei(0.01)
-  let sale
+  let sale, eventFilter
   before(done => {
     Sale.new(TOKENS, PRICE, {from: accounts[0]})
     .then(contract => {
@@ -43,6 +76,14 @@ contract('Sale', function (accounts) {
       done()
     })
     .catch(done)
+  })
+  afterEach(() => {
+    if (eventFilter) {
+      eventFilter.stopWatching()
+      eventFilter = null
+      // workaround to create a new block on testRPC to avoid repeated events
+      web3.eth.sendTransaction({from: accounts[0], to: accounts[1], value: web3.toWei(1, 'finney')})
+    }
   })
 
   it('should be owned', () => {
@@ -68,8 +109,25 @@ contract('Sale', function (accounts) {
   it('only owner could register a promoter', () => {
     return checkFailOrNullAddress(sale.registerPromoter.call(accounts[2], {from: accounts[1]}))
   })
-  function testBuyTokenFor({buyer, amount, newBuyer=true, expContractBalance, expBuyerTokenBalance, expSoldTokens, expSaleEnded}) {
+  function testBuyTokenFor({buyer, amount, newBuyer=true, emitTokenSold=true, expContractBalance, expBuyerTokenBalance, expSoldTokens, expSaleEnded}) {
     let expectedBuyers
+
+    let rejectTimeout
+    let eventDeferred = newDeferred()
+    eventFilter = sale.TokensSold((error, result) => {
+      if (error) throw error
+      let eventData = result.args
+      if (eventData.buyer === '0x') return
+      // console.log('### event tx:',result.transactionHash, 'data:', eventData.buyer, eventData.payed.toString(), eventData.change.toString())
+      assert.equal(eventData.buyer, buyer, 'TokensSold event (buyer)')
+      // assert.equal(eventData.promoter, xxxx, 'TokensSold event (promoter)')
+      // assert.equal(eventData.tokens, xxxx, 'TokensSold event (tokens)')
+      // assert.equal(eventData.payed, xxxxx, 'TokensSold event (payed)')
+      // assert.equal(eventData.change, xxxxx, 'TokensSold event (change)')
+      //TODO: check all event fields
+      clearTimeout(rejectTimeout)
+      eventDeferred.resolve()
+    })
     return sale.getBuyers().then(value => expectedBuyers = newBuyer ? [...value, buyer] : value)
       .then(() => sale.buyTokenFor(buyer, {from: buyer, value: amount}))
       .then(() => checkNumber(sale.balanceOf(buyer), expBuyerTokenBalance, 'balance of buyer'))
@@ -77,6 +135,10 @@ contract('Sale', function (accounts) {
       .then(() => checkDeepEqual(sale.getBuyers(), expectedBuyers, 'buyer added to the array of buyers'))
       .then(() => checkEqual(sale.saleEnded(), expSaleEnded, 'saleEnded'))
       .then(() => checkEthBalance(sale.address, expContractBalance, 'contract balance'))
+      .then(() => {
+        rejectTimeout = setTimeout(() => eventDeferred.reject(), 1000)
+        return eventDeferred.getPromise()
+      })
   }
   it('buyTokenFor should update balances', () => {
     const buyer = accounts[2]
@@ -191,9 +253,9 @@ contract('Sale', function (accounts) {
     })
     .catch(err => assert.match(err.message, /invalid JUMP/, 'testRPC should throw "invalid JUMP"'))
   })
-  // it('should be initialized', () => {
-  //   //return sale.
-  // })
+  it('should withdraw()', () => {
+    throw new Error('TODO')
+  })
   // it('should be initialized', () => {
   //   //return sale.
   // })

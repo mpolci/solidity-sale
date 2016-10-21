@@ -69,7 +69,7 @@ contract Sale is owned, PromotedSale, SaleInterface {
     }
 
     function withdraw(uint amount) onlyOwner {
-        msg.sender.call.value(amount);
+        if (!msg.sender.call.value(amount)()) throw;
     }
 
 }

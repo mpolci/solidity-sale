@@ -253,10 +253,29 @@ contract('Sale', function (accounts) {
     })
     .catch(err => assert.match(err.message, /invalid JUMP/, 'testRPC should throw "invalid JUMP"'))
   })
-  it('should withdraw()', () => {
-    throw new Error('TODO')
+  it('withdraw() only by owner', () => {
+    let saleBalance = web3.eth.getBalance(sale.address)
+    return sale.withdraw(1, {from: accounts[1]})
+      .then(() => {
+        checkEqual(web3.eth.getBalance(sale.address), saleBalance, 'balance')
+      })
+      .catch(err => assert.match(err.message, /invalid JUMP/, 'testRPC should throw "invalid JUMP"'))
   })
-  // it('should be initialized', () => {
-  //   //return sale.
-  // })
+  it('withdraw() should transfer ethers', () => {
+    const account = accounts[0]
+    const gasPrice = web3.toBigNumber(web3.toWei(25, 'Gwei'))
+    let saleBalance = web3.eth.getBalance(sale.address)
+    let initialAccBal = web3.eth.getBalance(account)
+    let fees
+    return sale.withdraw.estimateGas(saleBalance, {from: account, gasPrice})
+      .then(gas => fees = gasPrice.mul(gas))
+      .then(() => sale.withdraw(saleBalance, {from: account, gasPrice}))
+      .then(() => {
+        assert.equal(web3.eth.getBalance(sale.address).toNumber(), 0, 'sale balance')
+        const expected = initialAccBal.plus(saleBalance).minus(fees)
+        const error = expected.minus(web3.eth.getBalance(account)).absoluteValue().div(expected).toNumber()
+        assert.isBelow(error, 0.00001, 'transfered amount rate')
+        // assert.equal(web3.eth.getBalance(account).toString(), expected.toString(), 'account balance')
+      })
+  })
 })

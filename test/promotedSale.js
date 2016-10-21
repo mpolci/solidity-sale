@@ -13,7 +13,7 @@ contract('PromotedSale', function (accounts) {
   })
 
   it('should have no promoters', () => {
-    return sale.promotersCount()
+    return sale.getPromotersCount()
     .then(value => assert.equal(value, 0, 'promotersCount() should return 0'))
     .then(() => sale.promoters(0))
     .then(address => {
@@ -41,7 +41,7 @@ contract('PromotedSale', function (accounts) {
       return sale.newPromoter.call({from: accounts[idx]})
       .then(addr => address = addr)
       .then(() => sale.newPromoter({from: accounts[idx]}))
-      .then(txid => sale.promotersCount())
+      .then(txid => sale.getPromotersCount())
       .then(count => {
         assert.equal(count.toNumber(), idx+1, 'promoters count')
         assert.notInclude(NULL_ADDRESSES, address, 'returned contract address')

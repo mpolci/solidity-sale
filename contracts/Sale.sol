@@ -72,4 +72,8 @@ contract Sale is owned, PromotedSale, SaleInterface {
         if (!msg.sender.call.value(amount)()) throw;
     }
 
+    function destroy() onlyOwner {
+        selfdestruct(msg.sender);
+    }
+
 }

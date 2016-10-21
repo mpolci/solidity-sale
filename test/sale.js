@@ -278,4 +278,14 @@ contract('Sale', function (accounts) {
         // assert.equal(web3.eth.getBalance(account).toString(), expected.toString(), 'account balance')
       })
   })
+  it('destroy() only by owner', () => {
+    return sale.destroy({from: accounts[1]})
+      .then(() => {
+        throw new Error('not implemented yet - should check if transaction is failed')
+      })
+      .catch(err => assert.match(err.message, /invalid JUMP/, 'testRPC should throw "invalid JUMP"'))
+  })
+  it.skip('destroy() should suicide', () => {
+    //TODO
+  })
 })

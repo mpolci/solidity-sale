@@ -3,7 +3,7 @@ module.exports = {
     "index.html": "index.html",
     "app.js": [],
     "extra.js": [
-      "javascripts/app.js",
+      "javascripts/application.js",
       "javascripts/transaction.controller.js"
     ],
     "app.css": [

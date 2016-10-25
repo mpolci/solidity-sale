@@ -19,3 +19,14 @@ truffle serve
 ```
 
 Open the browser at http://localhost:80
+
+## Building a library for external web site
+Run 
+```
+truffle compile
+truffle migrate
+truffle build
+```
+
+Import the generated `./build/app.js` file in your website.
+

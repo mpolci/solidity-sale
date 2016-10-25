@@ -1,7 +1,8 @@
 module.exports = {
   build: {
     "index.html": "index.html",
-    "app.js": [
+    "app.js": [],
+    "extra.js": [
       "javascripts/app.js",
       "javascripts/transaction.controller.js"
     ],

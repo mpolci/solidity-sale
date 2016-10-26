@@ -10,6 +10,11 @@ module.exports = {
       "stylesheets/app.css"
     ],
     // "images/": "images/"
+    "monitor.html": "monitor.html",
+    "monitor.js": [
+      "javascripts/monitor.js",
+      "javascripts/transaction.controller.js"
+    ]
   },
   rpc: {
     host: "localhost",

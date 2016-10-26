@@ -1,4 +1,4 @@
-angular.module('tokenSaleApp')
+angular.module('Transactions', [])
 .controller('TransactionController', function ($scope) {
   var self = this
   angular.extend(this, {

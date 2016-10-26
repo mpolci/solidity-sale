@@ -1,4 +1,4 @@
-angular.module('tokenSaleApp', [])
+angular.module('tokenSaleApp', ['Transactions'])
 .controller('TokenSaleController', function ($scope, $q) {
   var self = this
   var DECIMALPLACES = 15

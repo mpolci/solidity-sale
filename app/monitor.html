@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sale monitor</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href="./app.css" rel='stylesheet' type='text/css'>
+  <script src="./app.js"></script>
+  <script src="./monitor.js"></script>
+  <!--<script src="./angularapp.js"></script>-->
+</head>
+<body ng-cloack>
+  <h1>Token sale</h1>
+
+  <div ng-controller="TransactionController as tx">
+    <div ng-if="tx.accounts.length > 0">
+      <h2>Transaction tools</h2>
+      <div class="action">
+        <label for="account">from account: </label>
+        <select id="account" ng-model="tx.selectedAccount">
+          <option ng-repeat="a in tx.accounts" value="{{a}}">{{ $index }}</option>
+        </select>
+        <div class="info" ng-if="tx.selectedAccount">
+          <span>Address: {{ tx.selectedAccount }}</span>
+          <span>balance: {{ tx.selectedBalance }} eth</span>
+        </div>
+        <label for="send-address">To: </label>
+        <input id="send-address" type="text" ng-model="tx.destinationAddressInput">
+        <label for="send-amount">Amount: </label>
+        <input id="send-amount" type="text" ng-model="tx.sendAmountInput">
+        <button ng-click="tx.sendTransaction()" ng-disabled="!tx.canSendTransaction()">Send</button>
+        <div ng-if="tx.message">{{tx.message}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div ng-controller="MonitorController as monitor">
+    <h2>Events</h2>
+    <ul>
+      <li ng-repeat="e in monitor.events">
+        <div ng-switch="e.type">
+          <div ng-switch-when="TokensSold">
+            Buyed {{ e.tokens }} tokens from {{ e.buyer}}
+            <span ng-if="e.promoter">, promoted by {{ e.promoter }}</span>
+            . Payed {{ e.payed }} eth with a change of {{ e.change }} eth.
+            Transaction: {{ e.txid }}
+          </div>
+          <div ng-switch-default>Event {{ e.type }} in transaction {{ e.txid }}, args: {{ e.args }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+
+  <script>
+    window.addEventListener('load', function() {
+      angular.bootstrap(document, ['tokenSaleMonitorApp'])
+    })
+  </script>
+</body>
+</html>

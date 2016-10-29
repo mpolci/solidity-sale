@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sale</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-resource.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href="./app.css" rel='stylesheet' type='text/css'>
+  <script src="./app.js"></script>
+  <script src="./application-proxy.js"></script>
+</head>
+<body ng-cloack>
+  <h1>Token sale</h1>
+
+  <div ng-controller="TokenSaleController as sale">
+    <h2>Sale addresses</h2>
+    <ul>
+      <li>Main: {{sale.saleAddress}}</li>
+      <li ng-repeat="promoter in sale.promoters">Promoter: {{promoter}}</li>
+    </ul>
+
+    <h2>Sale info</h2>
+    <ul>
+      <li>Maximum tokens: {{sale.maxTokens}}</li>
+      <li>Token price: {{sale.tokenPrice}} eth</li>
+      <li>Sold tokens: {{sale.totalTokensSold}}</li>
+      <li ng-if="sale.saleEnded">The sale is over</li>
+      <li ng-if="!sale.saleEnded">The sale is in progress</li>
+    </ul>
+
+    <h2>Buyer info</h2>
+    <div>
+    <label>Address:
+      <input type="text" ng-model="sale.selectedAddress">
+    </label>
+    </div>
+    <button ng-click="sale.updateSelectedBalance()">get balance</button>
+    <div>Buyed tokens: {{sale.balanceOfSelected}}</div>
+  </div>
+
+  <script>
+    window.addEventListener('load', function() {
+      angular.bootstrap(document, ['tokenSaleApp'])
+    })
+  </script>
+</body>
+</html>

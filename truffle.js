@@ -14,7 +14,11 @@ module.exports = {
     "monitor.js": [
       "javascripts/monitor.js",
       "javascripts/transaction.controller.js"
-    ]
+    ],
+
+    // app using proxy
+    "index-proxy.html": "index-proxy.html",
+    "application-proxy.js": "javascripts/application-proxy.js"
   },
   rpc: {
     host: "localhost",

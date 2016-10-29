@@ -1,6 +1,10 @@
-var Web3 = require('web3')
+const _ = require('lodash')
+const Web3 = require('web3')
+const config = require('../config')
 
-let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'))
+const endpoint = _.get(config, 'ethereum.httpProvider', 'http://localhost:8545')
+
+let web3 = new Web3(new Web3.providers.HttpProvider(endpoint))
 
 let contracts = {
   Sale: require('../../build/contracts/Sale.sol')

@@ -10,6 +10,9 @@ var config = {
                 stream: process.stdout
             }
         ]
+    },
+    ethereum: {
+        httpProvider: 'http://localhost:8545'
     }
 };
 

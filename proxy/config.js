@@ -12,7 +12,8 @@ var config = {
         ]
     },
     ethereum: {
-        httpProvider: 'http://localhost:8545'
+        httpProvider: 'http://localhost:8545',
+        networkId: 'default'                      // 'default' or the number id of the network
     }
 };
 

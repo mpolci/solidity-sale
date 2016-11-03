@@ -25,7 +25,8 @@ function callContract (contract, fn, args, res, next) {
  * GET   /sale/ended                     get the state of sale (boolean)
  * GET   /sale/tokens/max                get the max number of tokens for sale
  * GET   /sale/tokens/price              get the price for each token
- * GET   /sale/buyer/:address/balance         get the price for each token
+ * GET   /sale/buyer/:address/balance    get the balance for an address
+ * GET   /address/sale                   get sale smart contract address
  *
  */
 
@@ -73,6 +74,10 @@ router.handlers = [
     ['get', '/sale/buyer/:address/balance', function (req, res, next) {
         if (!web3.isAddress(req.params.address)) return next(ClientErrors.INVALID_PARAMETER);
         callContract(sale, 'balanceOf', [req.params.address], res, next)
+    }],
+
+    ['get', '/address/sale', function (req, res, next) {
+        res.json(Sale.address)
     }],
 
     ['all', '*', function (req, res, next) {

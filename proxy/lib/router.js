@@ -25,6 +25,7 @@ function callContract (contract, fn, args, res, next) {
  * GET   /sale/ended                     get the state of sale (boolean)
  * GET   /sale/tokens/max                get the max number of tokens for sale
  * GET   /sale/tokens/price              get the price for each token
+ * GET   /sale/buyers/count              get the number of buyers
  * GET   /sale/buyers/:address/balance   get the balance for an address
  * GET   /address/sale                   get sale smart contract address
  *
@@ -69,6 +70,10 @@ router.handlers = [
 
     ['get', '/sale/tokens/price', function (req, res, next) {
         callContract(sale, 'tokenPrice', [], res, next)
+    }],
+
+    ['get', '/sale/buyers/count', function (req, res, next) {
+        callContract(sale, 'getBuyersCount', [], res, next)
     }],
 
     ['get', '/sale/buyers/:address/balance', function (req, res, next) {
